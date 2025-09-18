@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: meal-planner-backend
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: meal-planner-ui
+    command: streamlit run ui/app.py --server.port=8501 --server.address=0.0.0.0
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - backend
+
+  redis:
+    image: redis:7.2
+    container_name: meal-planner-redis
+    ports:
+      - "6379:6379"
+
