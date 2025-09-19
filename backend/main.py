@@ -1,43 +1,21 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-
-# Routers
 from backend.api.routes import router as api_router
-
-# Observability
 from backend.observability.logging_config import setup_logging
-from dotenv import load_dotenv
+from backend.observability.tracing import init_tracing
 
-# Load environment variables
-load_dotenv()
+app = FastAPI(title="AI Meal & Fitness Planner")
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # ---------- Startup ----------
+@app.on_event("startup")
+async def startup_event():
     setup_logging()
+    init_tracing()
     print("✅ Application startup complete")
 
-    yield  # Application runs here
-
-    # ---------- Shutdown ----------
+@app.on_event("shutdown")
+async def shutdown_event():
     print("🛑 Application shutdown complete")
 
-
-# Initialize FastAPI with lifespan
-app = FastAPI(lifespan=lifespan)
-
-# Middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],   # Adjust in production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Include API routes
+# Attach routes
 app.include_router(api_router)
 
 

@@ -1,31 +1,30 @@
 # 🥗 AI Meal & Fitness Planner
 
-An AI-powered **meal, grocery, and workout planner** built with **FastAPI**, **LangGraph**, and **Streamlit**.  
-It generates personalized plans based on your **weight, height, age, activity level, goal, diet, and duration**.  
+An **AI-powered planner** that creates personalized **meal plans, grocery lists, and workouts** based on your profile (weight, height, age, activity level, goal, diet preference, duration).
+Built with **FastAPI**, **LangGraph**, **Streamlit**, and **Langfuse** for observability.
 
 ---
 
 ## 🚀 Features
-- 🍴 **Meal Plan** → Recipes from [TheMealDB](https://www.themealdb.com)  
-- 🛒 **Grocery List** → Items from [OpenFoodFacts](https://world.openfoodfacts.org)  
-- 🏋️ **Workout Plan** → Exercises from [WGER API](https://wger.de/api/v2)  
-- 🎯 **Personalization** → Calories estimated using your profile  
-- 📊 **Observability** → Metrics, logging, and tracing (Langfuse)  
-- 🖥️ **User-Friendly UI** → Powered by Streamlit  
+
+- 🥘 **Meal Planning**: Personalized daily meals based on your diet and goals.
+- 🛒 **Grocery List (Structured)**: Automatically generated shopping list, **grouped by categories** (e.g., Dairy, Protein, Vegetables, Fruits, Grains).
+- 💪 **Workout Plan**: Tailored exercise suggestions to match your fitness goal.
+- 📊 **Observability**: Metrics, logging, and tracing with **Langfuse**.
+- 🎨 **Streamlit Frontend**: Simple UI with interactive input form and clean data tables.
 
 ---
+## 📂 Project Structure
 
-## 📂 Project 
 meal-planner-ai/
 │── backend/
-│ ├── api/
-│ │ ├── routes.py
-│ │ └── models.py
 │ ├── agents/
-│ │ ├── combined_pipeline.py
 │ │ ├── meal_planner.py
-│ │ ├── grocery_agent.py
-│ │ └── workout_planner.py
+│ │ ├── grocery_agent.py # ✅ now returns {item, category}
+│ │ ├── workout_agent.py
+│ │ └── combined_pipeline.py
+│ ├── api/
+│ │ └── routes.py
 │ ├── observability/
 │ │ ├── logging_config.py
 │ │ ├── metrics.py
@@ -33,9 +32,13 @@ meal-planner-ai/
 │ └── main.py
 │
 │── ui/
-│ └── app.py
+│ └── app.py # Streamlit frontend with grouped grocery display
+│
+│── .streamlit/
+│ └── secrets.toml
 │
 │── requirements.txt
-│── .env
 │── README.md
+
+
 
