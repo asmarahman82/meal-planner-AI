@@ -1,16 +1,15 @@
 import logging
-import structlog
+import sys
 
 def setup_logging():
+    """
+    Configure simple application logging.
+    """
     logging.basicConfig(
-        format="%(message)s",
-        level=logging.INFO
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[logging.StreamHandler(sys.stdout)]
     )
 
-    structlog.configure(
-        processors=[
-            structlog.processors.TimeStamper(fmt="iso"),
-            structlog.processors.JSONRenderer()
-        ]
-    )
+    logging.info("✅ Simple logging initialized (no JSON formatter).")
 

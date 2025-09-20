@@ -1,60 +1,39 @@
-import os
 import logging
-from langfuse import Langfuse
+import uuid
 
-logger = logging.getLogger(__name__)
+# A simple in-memory trace store
+_traces = {}
 
-
-
-class DummyTrace:
-    """Fallback trace if Langfuse is not configured."""
-
-    def log_event(self, name, payload=None):
-        logger.info(f"[DummyTrace] {name}: {payload}")
-
-    def event(self, name, input=None, output=None):
-        logger.info(f"[DummyTrace Event] {name}: input={input}, output={output}")
-
-    def end(self):
-        logger.info("[DummyTrace] Trace ended")
-
+def init_tracing():
+    """
+    Initialize tracing system (local mode).
+    """
+    logging.info("ℹ️ Tracing initialized (local mode, no JSON formatter).")
 
 def start_trace(name: str):
     """
-    Start a Langfuse trace if keys are present, otherwise return DummyTrace.
+    Start a new trace with a unique ID.
     """
-    public_key = os.getenv("LANGFUSE_PUBLIC_KEY")
-    secret_key = os.getenv("LANGFUSE_SECRET_KEY")
-    host = os.getenv("LANGFUSE_HOST", "https://cloud.langfuse.com")
+    trace_id = str(uuid.uuid4())
+    _traces[trace_id] = {"name": name, "events": []}
+    logging.info(f"▶️ Trace started: {name} ({trace_id})")
+    return trace_id
 
-    if not public_key or not secret_key:
-        logger.warning("⚠️ Langfuse keys not found. Using DummyTrace.")
-        return DummyTrace()
+def log_event(trace_id: str, message: str):
+    """
+    Log an event to a given trace.
+    """
+    if trace_id in _traces:
+        _traces[trace_id]["events"].append(message)
+    logging.info(f"📝 Trace {trace_id} event: {message}")
 
-    try:
-        client = Langfuse(
-            public_key=public_key,
-            secret_key=secret_key,
-            host=host,
-        )
-        trace = client.trace(name=name)
-
-        # --- Shim: add log_event for backwards compatibility ---
-        if not hasattr(trace, "log_event"):
-            def log_event(event_name, payload=None):
-                trace.event(name=event_name, input=payload or {})
-            trace.log_event = log_event
-
-        # --- Shim: add end() so pipeline doesn't crash ---
-        if not hasattr(trace, "end"):
-            def end():
-                logger.info("[LangfuseTrace] end() called (no-op for StatefulTraceClient)")
-            trace.end = end
-
-        logger.info("✅ Tracing initialized with Langfuse")
-        return trace
-
-    except Exception as e:
-        logger.error(f"❌ Failed to initialize Langfuse tracing: {e}")
-        return DummyTrace()
+def end_trace(trace_id: str):
+    """
+    End a trace and flush events.
+    """
+    if trace_id in _traces:
+        logging.info(f"⏹️ Trace ended: {_traces[trace_id]['name']} ({trace_id})")
+        for event in _traces[trace_id]["events"]:
+            logging.info(f"   └─ {event}")
+        del _traces[trace_id]
 
