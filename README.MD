@@ -6,9 +6,9 @@ It generates personalized plans based on your **weight, height, age, activity le
 ---
 
 ## 🚀 Features
-- 🍴 **Meal Plan** → Recipes from [TheMealDB](https://www.themealdb.com)  
-- 🛒 **Grocery List** → Items from [OpenFoodFacts](https://world.openfoodfacts.org)  
-- 🏋️ **Workout Plan** → Exercises from [WGER API](https://wger.de/api/v2)  
+- 🍴 **Meal Plan**  
+- 🛒 **Grocery List**   
+- 🏋️ **Workout Plan**   
 - 🎯 **Personalization** → Calories estimated using your profile  
 - 📊 **Observability** → Metrics, logging, and tracing (Langfuse)  
 - 🖥️ **User-Friendly UI** → Powered by Streamlit  
